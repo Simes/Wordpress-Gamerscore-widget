@@ -1,0 +1,3 @@
+[submodule "parser"]
+	path = parser
+	url = git://github.com/Simes/PHP-Gamercard-Parser.git
