@@ -1,0 +1,5 @@
+Wordpress Gamerscore widget
+
+A WP widget which adds a field to the user profile form (for all users above Subscriber) so they can enter their XBL gamertag. Will then present a list of gamerscores, in descending order, in the sidebar. Can optionally restrict to a set number of users, in which case it will show the top users by score.
+
+Has a submodule dependency on my PHP Gamercard parser.
