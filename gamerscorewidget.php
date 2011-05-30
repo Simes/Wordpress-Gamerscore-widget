@@ -3,10 +3,12 @@
 Plugin Name: Gamerscore Widget
 Description: Adds a sidebar widget to show a list of gamerscores.
 Author: Simon Brown
-Version: 1.0
+Version: 2.0
 Author URI: http://ready-up.net/
 
 1.0 brings an option to restrict the shown list to only the N top scorers, and staggers refresh times for each gamertag to avoid long waits for the widget to load.
+
+2.0 brings the awesome background image
 */
 
 
@@ -46,6 +48,8 @@ class GamerscoreWidget
 
 		if ($_POST["readyup_gamerscore_widget"]) {
 			$options['results'] = stripslashes($_POST["readyup_gamerscore_widget_results"]);
+			$options['preamble'] = stripslashes($_POST["readyup_gamerscore_widget_preamble"]);
+			$options['postamble'] = stripslashes($_POST["readyup_gamerscore_widget_postamble"]);
 
 			if (!is_numeric($options['results']))
 			{
@@ -56,11 +60,25 @@ class GamerscoreWidget
 		update_option('readyup_gamerscore_widget', $options);
 
 		$results = htmlspecialchars($options['results'], ENT_QUOTES);
+		$preamble = htmlspecialchars($options['preamble'], ENT_QUOTES);
+		$postamble = htmlspecialchars($options['postamble'], ENT_QUOTES);
 ?>          
 		<dl>
 			<dt><strong>Number of scores to display<br/>(-1 shows all)</strong></dt>
 			<dd>
 				<input name="readyup_gamerscore_widget_results" type="text" value="<?php echo $results; ?>" />
+			</dd>
+		</dl> 
+		<dl>
+			<dt><strong>HTML to insert before widget</strong></dt>
+			<dd>
+				<input name="readyup_gamerscore_widget_preamble" type="text" value="<?php echo $preamble; ?>" />
+			</dd>
+		</dl> 
+		<dl>
+			<dt><strong>HTML to insert after widget</strong></dt>
+			<dd>
+				<input name="readyup_gamerscore_widget_postamble" type="text" value="<?php echo $postamble; ?>" />
 			</dd>
 		</dl> 
 		<input type="hidden" name="readyup_gamerscore_widget" value="1" />
@@ -138,7 +156,7 @@ class GamerscoreWidget
 	{
 		extract($args);
 	
-		$this->pluginPath = get_settings('siteurl') . '/wp-content/plugins/gamerscorewidget/';
+		$this->pluginPath = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
 
 		
 		$scores = $this->getGamerScores();
@@ -165,16 +183,18 @@ class GamerscoreWidget
 		{
 
 			echo $before_widget;
+			echo $options['preamble'];
 			echo $before_title;
 			if ($maxscores > 0 && sizeof($scores) > $maxscores)
 			{
-				echo "Top $maxscores ";
+				echo "Top ";
 			}
 			echo "Gamerscore";
 			if (sizeof($scores) > 1)
 				echo "s";
 			echo $after_title;
-			echo '<style type="text/css">ul.gsw li {text-align: right;} span.gswt { float: left; }</style>';
+			echo '<style type="text/css">ul.gsw li {text-align: right;} span.gswt { float: left;} div.gamerscorewidget { background: url(' . $this->pluginPath . "gamerscore-bg.jpg" . ')</style>';
+			echo "<div class=\"gamerscorewidget\">";
 			echo "<ul class=\"gsw\">";
 			$i = 0;
 			foreach($scores as $key => $score)
@@ -193,6 +213,8 @@ class GamerscoreWidget
 			}
 			
 			echo "</ul>";
+			echo "</div>";
+			echo $options['postamble'];
 			echo $after_widget;
 		}
 	}
