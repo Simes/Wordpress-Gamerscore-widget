@@ -116,11 +116,10 @@ class GamerscoreWidget
 		else
 			$gamertag = get_usermeta($get_user_id, "gsw_Gamertag");
 
-		echo "<fieldset> <legend> Xbox Live Gamertag </legend>";
-		echo "\t<p><label>Gamertag:";
-		echo '<input  type="text" class="input" name="gsw_Gamertag" value="'.$gamertag.'"  size="25" tabindex="20" />';
-		echo "</label></p>";
-		echo "</fieldset>";
+		echo "<h3>Gamerscore Widget</h3>";
+		echo "<table class=\"form-table\"><tr><th><label for=\"gsw_Gamertag\">Xbox Live Gamertag:</label></th>";
+		echo '<td><input type="text" class="input" name="gsw_Gamertag" id="gsw_Gamertag" value="'.$gamertag.'"  size="25" tabindex="20" /></td>';
+		echo "</tr></table>";
 
 	}
 
