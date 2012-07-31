@@ -232,31 +232,25 @@ class GamerscoreWidget
 		// Next we get a timestamp value for now to compare things against
 		$now = time();
 
-		global $wpdb;
-		$ids = $wpdb->get_col("SELECT ID from $wpdb->users;");
-		if (sizeof($ids) == 1)
-		{
-			$ids = array($ids);
-		}
+
+		// Get authors to check for gamerscore
+
+		$wp_user_search = new WP_User_Query( array( 'who' => 'authors', 'fields' => 'all_with_meta' ) );
+		$editors = $wp_user_search->get_results();
+		
 
 		$result = array();
-		foreach ($ids as $id)
+		foreach ($editors as $userinfo)
 		{
-			$userinfo = get_userdata($id);
-			if ($userinfo->user_level > 0)
+			$score = $this->getUserGamerscore($userinfo, $now, $expire_hour, $expire_min);
+			if ($score != '')
 			{
-
-
-				$score = $this->getUserGamerscore($id, $userinfo, $now, $expire_hour, $expire_min);
-				if ($score != '')
+				// This means the user has a gamertag and we now have a score value
+				$result[] = $score;
+				if ($score->wascached != true)
 				{
-					// This means the user has a gamertag and we now have a score value
-					$result[] = $score;
-					if ($score->wascached != true)
-					{
-						// Not a cached score, so we need to update the expiry for the next one
-						$expire_min = $expire_min + 5;
-					}
+					// Not a cached score, so we need to update the expiry for the next one
+					$expire_min = $expire_min + 5;
 				}
 			}
 
@@ -266,9 +260,9 @@ class GamerscoreWidget
 		return $result;
 	}
 
-	function getUserGamerscore($id, $userinfo, $now, $expire_hour, $expire_min)
+	function getUserGamerscore($userinfo, $now, $expire_hour, $expire_min)
 	{
-
+		$id = $userinfo->ID;
 		$gamertag = get_usermeta($id, "gsw_Gamertag");
 
 		if ($gamertag == '')
